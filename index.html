@@ -2,459 +2,419 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#0A0E11">
-<title>Grind Signal // Minimal Tracker</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#080A0C">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Grind Radar</title>
 <style>
 :root {
-  --bg: #0A0E11;
-  --surface: #12181C;
-  --surface-raised: #182026;
-  --line: #222C33;
-  --text: #E5ECF0;
-  --text-muted: #7E8E98;
-  --text-dim: #515E66;
+  --bg: #080A0C;
+  --surface: #101418;
+  --surface-tint: #141A20;
+  --line: #1D242C;
+  --line-bright: #29343E;
+  --text: #EDF2F5;
+  --text-muted: #82929E;
+  --text-dim: #4B5762;
   --accent: #00E5C0;
-  --accent-soft: rgba(0, 229, 192, 0.12);
-  --crit: #FF5A5A;
-  --crit-soft: rgba(255, 90, 90, 0.12);
-  --warn: #FFB74D;
-  --warn-soft: rgba(255, 183, 77, 0.12);
-  --good: #4CAF50;
-  --good-soft: rgba(76, 175, 80, 0.12);
+  --accent-soft: rgba(0, 229, 192, 0.15);
+  --warn: #FFAA33;
+  --crit: #FF5252;
   --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body {
+html, body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--sans);
-  line-height: 1.4;
-  padding: 16px 14px 40px;
-  max-width: 540px;
-  margin: 0 auto;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
   -webkit-font-smoothing: antialiased;
 }
+.screen {
+  flex: 1;
+  max-width: 440px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 12px 14px 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow-y: auto;
+}
 
-/* Top Navigation Bar */
-.nav {
+/* Top micro bar */
+.top-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-bottom: 14px;
-  border-bottom: 1px solid var(--line);
-  margin-bottom: 16px;
+  padding-bottom: 8px;
 }
-.nav-brand {
+.tag-brand {
   font-family: var(--mono);
   font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 1.2px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
   color: var(--accent);
   text-transform: uppercase;
 }
-.nav-btn {
+.tag-days {
   font-family: var(--mono);
   font-size: 11px;
-  color: var(--text-muted);
-  text-decoration: none;
-  background: var(--surface-raised);
-  border: 1px solid var(--line);
-  padding: 5px 10px;
-  border-radius: 6px;
-  transition: all 0.15s ease;
-}
-.nav-btn:hover, .nav-btn:active {
-  color: var(--text);
-  border-color: var(--accent);
+  background: rgba(255, 82, 82, 0.15);
+  color: var(--crit);
+  border: 1px solid rgba(255, 82, 82, 0.3);
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
 }
 
-/* Header Banner */
-.header {
-  margin-bottom: 16px;
-}
-.header h1 {
-  font-size: 26px;
-  font-weight: 800;
-  letter-spacing: -0.5px;
-  margin-bottom: 4px;
-}
-.header .sub {
-  font-size: 13px;
-  color: var(--text-muted);
-  font-family: var(--mono);
-}
-
-/* Big KPI Strip */
-.kpi-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 16px;
-}
-.kpi-card {
+/* Hero Visual: Ring + Pace numbers */
+.hero-box {
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 10px;
-  padding: 14px 12px;
+  border-radius: 14px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
-.kpi-card.highlight {
-  background: linear-gradient(135deg, rgba(0,229,192,0.06) 0%, rgba(18,24,28,1) 100%);
-  border-color: rgba(0, 229, 192, 0.4);
+.ring-wrap {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  flex-shrink: 0;
 }
-.kpi-val {
-  font-size: 32px;
-  font-weight: 900;
+.ring-wrap svg {
+  transform: rotate(-90deg);
+  width: 100px;
+  height: 100px;
+}
+.ring-bg {
+  stroke: var(--line);
+  stroke-width: 9;
+  fill: none;
+}
+.ring-fg {
+  stroke: var(--accent);
+  stroke-width: 9;
+  stroke-linecap: round;
+  fill: none;
+  stroke-dasharray: 289.0;
+  stroke-dashoffset: 193.6;
+  transition: stroke-dashoffset 0.6s ease;
+}
+.ring-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.ring-pct {
   font-family: var(--mono);
-  line-height: 1.1;
+  font-size: 22px;
+  font-weight: 900;
   color: var(--text);
+  line-height: 1;
 }
-.kpi-card.highlight .kpi-val {
-  color: var(--accent);
+.ring-sub {
+  font-size: 9px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-family: var(--mono);
+  letter-spacing: 0.8px;
+  margin-top: 2px;
 }
-.kpi-card.crit .kpi-val {
-  color: var(--crit);
+
+.hero-stats {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
-.kpi-label {
+.stat-pill {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 8px;
+  background: var(--surface-tint);
+  border-radius: 7px;
+}
+.stat-k {
   font-size: 11px;
+  color: var(--text-muted);
+  font-family: var(--mono);
+  text-transform: uppercase;
+}
+.stat-v {
+  font-size: 13px;
+  font-weight: 700;
+  font-family: var(--mono);
+}
+.stat-v.crit { color: var(--crit); }
+.stat-v.accent { color: var(--accent); }
+.stat-v.warn { color: var(--warn); }
+
+/* Visual 2: The 94-Dot Waffle Matrix */
+.card-section {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+.sec-hdr {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  font-family: var(--mono);
+  font-size: 10.5px;
   text-transform: uppercase;
   letter-spacing: 0.8px;
   color: var(--text-muted);
-  font-family: var(--mono);
-  margin-top: 4px;
 }
-.kpi-sub {
-  font-size: 11.5px;
-  color: var(--text-dim);
-  margin-top: 2px;
-}
-
-/* Grind Equation Callout */
-.formula-box {
-  background: var(--surface);
-  border-left: 3px solid var(--accent);
-  padding: 12px 14px;
-  border-radius: 0 8px 8px 0;
-  margin-bottom: 20px;
-}
-.formula-title {
-  font-size: 11px;
-  font-family: var(--mono);
+.sec-hdr b {
   color: var(--accent);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 2px;
-  font-weight: 700;
 }
-.formula-text {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text);
+.waffle-grid {
+  display: grid;
+  grid-template-columns: repeat(14, 1fr);
+  gap: 5px;
+  padding: 2px 0;
 }
-.formula-sub {
-  font-size: 12px;
-  color: var(--text-muted);
-  margin-top: 2px;
+.dot {
+  aspect-ratio: 1;
+  border-radius: 3px;
+  background: var(--line-bright);
+  transition: transform 0.15s ease;
 }
-
-/* Section Titles */
-.sec-title {
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--text-muted);
-  font-family: var(--mono);
-  margin-bottom: 10px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.dot.done {
+  background: var(--accent);
+  box-shadow: 0 0 5px rgba(0, 229, 192, 0.4);
 }
 
-/* Today's Hit List */
-.hit-list {
+/* Visual 3: Activity Sparkline */
+.spark-svg {
+  width: 100%;
+  height: 38px;
+  display: block;
+}
+
+/* Visual 4: Track Progress Bars */
+.tracks-grid {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  margin-bottom: 22px;
+  gap: 6px;
 }
-.hit-item {
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 10px 12px;
+.track-item {
   display: flex;
   flex-direction: column;
   gap: 3px;
 }
-.hit-header {
+.track-hdr {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-}
-.hit-tag {
-  font-family: var(--mono);
-  font-size: 9.5px;
-  font-weight: 700;
-  padding: 2px 6px;
-  border-radius: 4px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-.hit-tag.crit { background: var(--crit-soft); color: var(--crit); }
-.hit-tag.warn { background: var(--warn-soft); color: var(--warn); }
-.hit-tag.good { background: var(--good-soft); color: var(--good); }
-.hit-tag.accent { background: var(--accent-soft); color: var(--accent); }
-.hit-title {
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 11.5px;
   color: var(--text);
 }
-.hit-meta {
-  font-size: 12px;
-  color: var(--text-muted);
-}
-
-/* Track Bars */
-.tracks-box {
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  padding: 14px;
-  margin-bottom: 22px;
-}
-.track-row {
-  margin-bottom: 12px;
-}
-.track-row:last-child {
-  margin-bottom: 0;
-}
-.track-info {
-  display: flex;
-  justify-content: space-between;
-  font-size: 13px;
-  margin-bottom: 4px;
-}
-.track-name {
-  font-weight: 600;
-}
-.track-val {
-  font-family: var(--mono);
-  color: var(--text-muted);
-  font-size: 12px;
-}
-.bar-bg {
-  height: 6px;
-  background: var(--surface-raised);
+.bar-track {
+  height: 4.5px;
+  background: var(--line);
   border-radius: 3px;
   overflow: hidden;
 }
 .bar-fill {
   height: 100%;
-  background: var(--accent);
   border-radius: 3px;
 }
-.track-detail {
-  font-size: 11px;
-  color: var(--text-dim);
-  margin-top: 3px;
-}
 
-/* Top Scope Buckets */
-.bucket-row {
+/* Today's 3-pill Action Footer */
+.action-pills {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+.pill {
+  background: var(--surface-tint);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 6px 8px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 8px 10px;
-  border-bottom: 1px solid var(--line);
-  font-size: 13px;
+  gap: 6px;
+  text-decoration: none;
 }
-.bucket-row:last-child {
-  border-bottom: none;
+.pill-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
 }
-.bucket-rem {
-  font-family: var(--mono);
-  font-size: 12px;
-  color: var(--warn);
+.pill-dot.crit { background: var(--crit); box-shadow: 0 0 5px var(--crit); }
+.pill-dot.warn { background: var(--warn); }
+.pill-txt {
+  font-size: 11px;
   font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* Footer */
-.footer {
+.bottom-link {
   text-align: center;
-  font-size: 11.5px;
-  color: var(--text-dim);
+  padding-top: 4px;
+}
+.bottom-link a {
   font-family: var(--mono);
-  margin-top: 24px;
+  font-size: 10.5px;
+  color: var(--text-dim);
+  text-decoration: none;
+}
+.bottom-link a:hover {
+  color: var(--accent);
 }
 </style>
 </head>
 <body>
 
-<div class="nav">
-  <div class="nav-brand">Prep Signal // Grind View</div>
-  <a class="nav-btn" href="full.html">Full Analytics ↗</a>
-</div>
+<div class="screen">
 
-<div class="header">
-  <h1>Daily Grind Radar</h1>
-  <div class="sub">Day 123 of Cycle • Target End: 2026-11-30</div>
-</div>
+  <!-- Micro Bar -->
+  <div class="top-bar">
+    <div class="tag-brand">⚡ GRIND RADAR</div>
+    <div class="tag-days">21 DAYS TO NOV 30</div>
+  </div>
 
-<div class="formula-box">
-  <div class="formula-title">Target Daily Equation</div>
-  <div class="formula-text">3 New Problems/Day + 3 Reviews/Session</div>
-  <div class="formula-sub">Sustains 21/week pace to clear remaining 63 problems by Nov 30.</div>
-</div>
+  <!-- Hero Ring & Quota -->
+  <div class="hero-box">
+    <div class="ring-wrap">
+      <svg viewBox="0 0 100 100">
+        <circle class="ring-bg" cx="50" cy="50" r="46"></circle>
+        <circle class="ring-fg" cx="50" cy="50" r="46"></circle>
+      </svg>
+      <div class="ring-label">
+        <div class="ring-pct">33%</div>
+        <div class="ring-sub">DONE</div>
+      </div>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-pill">
+        <span class="stat-k">Required</span>
+        <span class="stat-v accent">3.0 / day</span>
+      </div>
+      <div class="stat-pill">
+        <span class="stat-k">DSA Left</span>
+        <span class="stat-v">63 <span style="font-size:10px;color:var(--text-dim);">(31/94)</span></span>
+      </div>
+      <div class="stat-pill">
+        <span class="stat-k">Reviews Due</span>
+        <span class="stat-v crit">71 overdue</span>
+      </div>
+    </div>
+  </div>
 
-<div class="kpi-grid">
-  <div class="kpi-card highlight">
-    <div class="kpi-val">21</div>
-    <div class="kpi-label">Days Left</div>
-    <div class="kpi-sub">3.0 weeks to target</div>
+  <!-- Visual 1: 94-Problem Matrix (31 green vs 63 dark) -->
+  <div class="card-section">
+    <div class="sec-hdr">
+      <span>Cut-List Scope Matrix</span>
+      <span><b>31</b> / 94</span>
+    </div>
+    <div class="waffle-grid">
+      <div class="dot done" title="Problem 1 (Done)"></div><div class="dot done" title="Problem 2 (Done)"></div><div class="dot done" title="Problem 3 (Done)"></div><div class="dot done" title="Problem 4 (Done)"></div><div class="dot done" title="Problem 5 (Done)"></div><div class="dot done" title="Problem 6 (Done)"></div><div class="dot done" title="Problem 7 (Done)"></div><div class="dot done" title="Problem 8 (Done)"></div><div class="dot done" title="Problem 9 (Done)"></div><div class="dot done" title="Problem 10 (Done)"></div><div class="dot done" title="Problem 11 (Done)"></div><div class="dot done" title="Problem 12 (Done)"></div><div class="dot done" title="Problem 13 (Done)"></div><div class="dot done" title="Problem 14 (Done)"></div><div class="dot done" title="Problem 15 (Done)"></div><div class="dot done" title="Problem 16 (Done)"></div><div class="dot done" title="Problem 17 (Done)"></div><div class="dot done" title="Problem 18 (Done)"></div><div class="dot done" title="Problem 19 (Done)"></div><div class="dot done" title="Problem 20 (Done)"></div><div class="dot done" title="Problem 21 (Done)"></div><div class="dot done" title="Problem 22 (Done)"></div><div class="dot done" title="Problem 23 (Done)"></div><div class="dot done" title="Problem 24 (Done)"></div><div class="dot done" title="Problem 25 (Done)"></div><div class="dot done" title="Problem 26 (Done)"></div><div class="dot done" title="Problem 27 (Done)"></div><div class="dot done" title="Problem 28 (Done)"></div><div class="dot done" title="Problem 29 (Done)"></div><div class="dot done" title="Problem 30 (Done)"></div><div class="dot done" title="Problem 31 (Done)"></div><div class="dot" title="Problem 32 (Remaining)"></div><div class="dot" title="Problem 33 (Remaining)"></div><div class="dot" title="Problem 34 (Remaining)"></div><div class="dot" title="Problem 35 (Remaining)"></div><div class="dot" title="Problem 36 (Remaining)"></div><div class="dot" title="Problem 37 (Remaining)"></div><div class="dot" title="Problem 38 (Remaining)"></div><div class="dot" title="Problem 39 (Remaining)"></div><div class="dot" title="Problem 40 (Remaining)"></div><div class="dot" title="Problem 41 (Remaining)"></div><div class="dot" title="Problem 42 (Remaining)"></div><div class="dot" title="Problem 43 (Remaining)"></div><div class="dot" title="Problem 44 (Remaining)"></div><div class="dot" title="Problem 45 (Remaining)"></div><div class="dot" title="Problem 46 (Remaining)"></div><div class="dot" title="Problem 47 (Remaining)"></div><div class="dot" title="Problem 48 (Remaining)"></div><div class="dot" title="Problem 49 (Remaining)"></div><div class="dot" title="Problem 50 (Remaining)"></div><div class="dot" title="Problem 51 (Remaining)"></div><div class="dot" title="Problem 52 (Remaining)"></div><div class="dot" title="Problem 53 (Remaining)"></div><div class="dot" title="Problem 54 (Remaining)"></div><div class="dot" title="Problem 55 (Remaining)"></div><div class="dot" title="Problem 56 (Remaining)"></div><div class="dot" title="Problem 57 (Remaining)"></div><div class="dot" title="Problem 58 (Remaining)"></div><div class="dot" title="Problem 59 (Remaining)"></div><div class="dot" title="Problem 60 (Remaining)"></div><div class="dot" title="Problem 61 (Remaining)"></div><div class="dot" title="Problem 62 (Remaining)"></div><div class="dot" title="Problem 63 (Remaining)"></div><div class="dot" title="Problem 64 (Remaining)"></div><div class="dot" title="Problem 65 (Remaining)"></div><div class="dot" title="Problem 66 (Remaining)"></div><div class="dot" title="Problem 67 (Remaining)"></div><div class="dot" title="Problem 68 (Remaining)"></div><div class="dot" title="Problem 69 (Remaining)"></div><div class="dot" title="Problem 70 (Remaining)"></div><div class="dot" title="Problem 71 (Remaining)"></div><div class="dot" title="Problem 72 (Remaining)"></div><div class="dot" title="Problem 73 (Remaining)"></div><div class="dot" title="Problem 74 (Remaining)"></div><div class="dot" title="Problem 75 (Remaining)"></div><div class="dot" title="Problem 76 (Remaining)"></div><div class="dot" title="Problem 77 (Remaining)"></div><div class="dot" title="Problem 78 (Remaining)"></div><div class="dot" title="Problem 79 (Remaining)"></div><div class="dot" title="Problem 80 (Remaining)"></div><div class="dot" title="Problem 81 (Remaining)"></div><div class="dot" title="Problem 82 (Remaining)"></div><div class="dot" title="Problem 83 (Remaining)"></div><div class="dot" title="Problem 84 (Remaining)"></div><div class="dot" title="Problem 85 (Remaining)"></div><div class="dot" title="Problem 86 (Remaining)"></div><div class="dot" title="Problem 87 (Remaining)"></div><div class="dot" title="Problem 88 (Remaining)"></div><div class="dot" title="Problem 89 (Remaining)"></div><div class="dot" title="Problem 90 (Remaining)"></div><div class="dot" title="Problem 91 (Remaining)"></div><div class="dot" title="Problem 92 (Remaining)"></div><div class="dot" title="Problem 93 (Remaining)"></div><div class="dot" title="Problem 94 (Remaining)"></div>
+    </div>
   </div>
-  <div class="kpi-card">
-    <div class="kpi-val">3.0</div>
-    <div class="kpi-label">Needed / Day</div>
-    <div class="kpi-sub">21.0 problems / week</div>
-  </div>
-  <div class="kpi-card">
-    <div class="kpi-val">63</div>
-    <div class="kpi-label">DSA Remaining</div>
-    <div class="kpi-sub">31 of 94 done (32%)</div>
-  </div>
-  <div class="kpi-card crit">
-    <div class="kpi-val">71</div>
-    <div class="kpi-label">Reviews Due</div>
-    <div class="kpi-sub">Overdue recall backlog</div>
-  </div>
-</div>
 
-<div class="sec-title">
-  <span>Today's Hit List</span>
-  <span style="font-size:11px;color:var(--text-dim)">Priority Order</span>
-</div>
+  <!-- Visual 2: 28-Day Momentum / Activity Sparkline -->
+  <div class="card-section">
+    <div class="sec-hdr">
+      <span>Activity Momentum</span>
+      <span style="font-size:9.5px;color:var(--text-dim)">Last 28 Days</span>
+    </div>
+    <svg class="spark-svg" viewBox="0 0 280 40" preserveAspectRatio="none">
+      <rect x="0.0" y="38.0" width="6.5" height="2.0" rx="1.5" fill="var(--line-bright)"><title>2026-10-13: 0m</title></rect><rect x="10.1" y="38.0" width="6.5" height="2.0" rx="1.5" fill="var(--line-bright)"><title>2026-10-14: 0m</title></rect><rect x="20.3" y="38.0" width="6.5" height="2.0" rx="1.5" fill="var(--line-bright)"><title>2026-10-15: 0m</title></rect><rect x="30.4" y="38.0" width="6.5" height="2.0" rx="1.5" fill="var(--line-bright)"><title>2026-10-16: 0m</title></rect><rect x="40.5" y="38.0" width="6.5" height="2.0" rx="1.5" fill="var(--line-bright)"><title>2026-10-17: 0m</title></rect><rect x="50.6" y="38.0" width="6.5" height="2.0" rx="1.5" fill="var(--line-bright)"><title>2026-10-18: 0m</title></rect><rect x="60.8" y="38.0" width="6.5" height="2.0" rx="1.5" fill="var(--line-bright)"><title>2026-10-19: 0m</title></rect><rect x="70.9" y="38.0" width="6.5" height="2.0" rx="1.5" fill="var(--line-bright)"><title>2026-10-20: 0m</title></rect><rect x="81.0" y="38.0" width="6.5" height="2.0" rx="1.5" fill="var(--line-bright)"><title>2026-10-21: 0m</title></rect><rect x="91.2" y="36.0" width="6.5" height="4.0" rx="1.5" fill="var(--accent)"><title>2026-10-22: 5m</title></rect><rect x="101.3" y="38.0" width="6.5" height="2.0" rx="1.5" fill="var(--line-bright)"><title>2026-10-23: 0m</title></rect><rect x="111.4" y="38.0" width="6.5" height="2.0" rx="1.5" fill="var(--line-bright)"><title>2026-10-24: 0m</title></rect><rect x="121.6" y="38.0" width="6.5" height="2.0" rx="1.5" fill="var(--line-bright)"><title>2026-10-25: 0m</title></rect><rect x="131.7" y="38.0" width="6.5" height="2.0" rx="1.5" fill="var(--line-bright)"><title>2026-10-26: 0m</title></rect><rect x="141.8" y="38.0" width="6.5" height="2.0" rx="1.5" fill="var(--line-bright)"><title>2026-10-27: 0m</title></rect><rect x="151.9" y="38.0" width="6.5" height="2.0" rx="1.5" fill="var(--line-bright)"><title>2026-10-28: 0m</title></rect><rect x="162.1" y="38.0" width="6.5" height="2.0" rx="1.5" fill="var(--line-bright)"><title>2026-10-29: 0m</title></rect><rect x="172.2" y="38.0" width="6.5" height="2.0" rx="1.5" fill="var(--line-bright)"><title>2026-10-30: 0m</title></rect><rect x="182.3" y="5.8" width="6.5" height="34.2" rx="1.5" fill="var(--accent)"><title>2026-10-31: 57m</title></rect><rect x="192.5" y="5.2" width="6.5" height="34.8" rx="1.5" fill="var(--accent)"><title>2026-11-01: 58m</title></rect><rect x="202.6" y="38.0" width="6.5" height="2.0" rx="1.5" fill="var(--line-bright)"><title>2026-11-02: 0m</title></rect><rect x="212.7" y="38.0" width="6.5" height="2.0" rx="1.5" fill="var(--line-bright)"><title>2026-11-03: 0m</title></rect><rect x="222.9" y="38.0" width="6.5" height="2.0" rx="1.5" fill="var(--line-bright)"><title>2026-11-04: 0m</title></rect><rect x="233.0" y="38.0" width="6.5" height="2.0" rx="1.5" fill="var(--line-bright)"><title>2026-11-05: 0m</title></rect><rect x="243.1" y="38.0" width="6.5" height="2.0" rx="1.5" fill="var(--line-bright)"><title>2026-11-06: 0m</title></rect><rect x="253.2" y="38.0" width="6.5" height="2.0" rx="1.5" fill="var(--line-bright)"><title>2026-11-07: 0m</title></rect><rect x="263.4" y="38.0" width="6.5" height="2.0" rx="1.5" fill="var(--line-bright)"><title>2026-11-08: 0m</title></rect><rect x="273.5" y="38.0" width="6.5" height="2.0" rx="1.5" fill="var(--line-bright)"><title>2026-11-09: 0m</title></rect>
+    </svg>
+  </div>
 
-<div class="hit-list">
-  <div class="hit-item">
-    <div class="hit-header">
-      <span class="hit-title">Bellman-Ford Algorithm</span>
-      <span class="hit-tag crit">LEACH RECALL</span>
+  <!-- Visual 3: Track Breakdown Bars -->
+  <div class="card-section">
+    <div class="sec-hdr">
+      <span>Track Readiness</span>
+      <span>Weighted 36%</span>
     </div>
-    <div class="hit-meta">Daily recall (stuck point: V-1 relaxations)</div>
-  </div>
-  <div class="hit-item">
-    <div class="hit-header">
-      <span class="hit-title">Dijkstra's Algorithm</span>
-      <span class="hit-tag warn">DERIVE RECALL</span>
+    <div class="tracks-grid">
+      
+        <div class="track-item">
+          <div class="track-hdr">
+            <span>DSA</span>
+            <span class="mono">68%</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill" style="width:68%; background:var(--accent);"></div>
+          </div>
+        </div>
+        <div class="track-item">
+          <div class="track-hdr">
+            <span>System Design</span>
+            <span class="mono">8%</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill" style="width:8%; background:var(--warn);"></div>
+          </div>
+        </div>
+        <div class="track-item">
+          <div class="track-hdr">
+            <span>LLD</span>
+            <span class="mono">0%</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill" style="width:0%; background:var(--text-dim);"></div>
+          </div>
+        </div>
+        <div class="track-item">
+          <div class="track-hdr">
+            <span>Behavioral</span>
+            <span class="mono">0%</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill" style="width:0%; background:var(--text-dim);"></div>
+          </div>
+        </div>
+        <div class="track-item">
+          <div class="track-hdr">
+            <span>Java</span>
+            <span class="mono">0%</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill" style="width:0%; background:var(--text-dim);"></div>
+          </div>
+        </div>
     </div>
-    <div class="hit-meta">Review #3 (contradiction proof — graduates if clean)</div>
   </div>
-  <div class="hit-item">
-    <div class="hit-header">
-      <span class="hit-title">N-Queens (LC 51)</span>
-      <span class="hit-tag good">COVERAGE</span>
-    </div>
-    <div class="hit-meta">Recursion / Backtracking (2 declines — write solve(row))</div>
-  </div>
-  <div class="hit-item">
-    <div class="hit-header">
-      <span class="hit-title">Word Break (LC 139)</span>
-      <span class="hit-tag accent">PRACTICE</span>
-    </div>
-    <div class="hit-meta">Subproblem cache derivation O(n³)</div>
-  </div>
-</div>
 
-<div class="sec-title">
-  <span>Track Breakdown</span>
-  <span style="font-size:11px;color:var(--text-dim)">35% Readiness</span>
-</div>
+  <!-- Action Pills & Link -->
+  <div class="action-pills">
+    <div class="pill">
+      <div class="pill-dot crit"></div>
+      <span class="pill-txt">Bellman-Ford [leech]</span>
+    </div>
+    <div class="pill">
+      <div class="pill-dot warn"></div>
+      <span class="pill-txt">Dijkstra #3 [derive]</span>
+    </div>
+  </div>
 
-<div class="tracks-box">
-  <div class="track-row">
-    <div class="track-info">
-      <span class="track-name">DSA</span>
-      <span class="track-val">68%</span>
-    </div>
-    <div class="bar-bg">
-      <div class="bar-fill" style="width: 68%;"></div>
-    </div>
-    <div class="track-detail">31/94 cut-list (63 left)</div>
+  <div class="bottom-link">
+    <a href="full.html">Open Full Deep Analytics →</a>
   </div>
-  <div class="track-row">
-    <div class="track-info">
-      <span class="track-name">System Design</span>
-      <span class="track-val">8%</span>
-    </div>
-    <div class="bar-bg">
-      <div class="bar-fill" style="width: 8%;"></div>
-    </div>
-    <div class="track-detail">2/24 cases explored</div>
-  </div>
-  <div class="track-row">
-    <div class="track-info">
-      <span class="track-name">LLD</span>
-      <span class="track-val">0%</span>
-    </div>
-    <div class="bar-bg">
-      <div class="bar-fill" style="width: 0%;"></div>
-    </div>
-    <div class="track-detail">0 cases (unstarted)</div>
-  </div>
-  <div class="track-row">
-    <div class="track-info">
-      <span class="track-name">Behavioral</span>
-      <span class="track-val">0%</span>
-    </div>
-    <div class="bar-bg">
-      <div class="bar-fill" style="width: 0%;"></div>
-    </div>
-    <div class="track-detail">0/5 STAR stories</div>
-  </div>
-  <div class="track-row">
-    <div class="track-info">
-      <span class="track-name">Java</span>
-      <span class="track-val">0%</span>
-    </div>
-    <div class="bar-bg">
-      <div class="bar-fill" style="width: 0%;"></div>
-    </div>
-    <div class="track-detail">Core OOP & Concurrency</div>
-  </div>
-</div>
 
-<div class="sec-title">
-  <span>Largest DSA Queues</span>
-  <span style="font-size:11px;color:var(--text-dim)">Remaining</span>
-</div>
-
-<div class="tracks-box" style="padding:4px 8px;">
-  <div class="bucket-row">
-    <span>Recursion / Backtracking</span>
-    <span class="bucket-rem">3 left <span style="color:var(--text-dim);font-weight:normal;">(12/15)</span></span>
-  </div>
-  <div class="bucket-row">
-    <span>DP gaps</span>
-    <span class="bucket-rem">12 left <span style="color:var(--text-dim);font-weight:normal;">(0/12)</span></span>
-  </div>
-  <div class="bucket-row">
-    <span>Arrays — Hard</span>
-    <span class="bucket-rem">13 left <span style="color:var(--text-dim);font-weight:normal;">(0/13)</span></span>
-  </div>
-  <div class="bucket-row">
-    <span>Stack / Queue</span>
-    <span class="bucket-rem">10 left <span style="color:var(--text-dim);font-weight:normal;">(0/10)</span></span>
-  </div>
-  <div class="bucket-row">
-    <span>Sliding Window</span>
-    <span class="bucket-rem">6 left <span style="color:var(--text-dim);font-weight:normal;">(0/6)</span></span>
-  </div>
-</div>
-
-<div class="footer">
-  Updated 2026-11-09 • Auto-syncs daily at 9:00 AM<br>
-  <a href="full.html" style="color:var(--accent);text-decoration:none;margin-top:6px;display:inline-block;">Open Full Analytics Dashboard →</a>
 </div>
 
 </body>
