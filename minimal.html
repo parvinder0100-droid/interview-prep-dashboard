@@ -254,6 +254,112 @@ html, body {
   grid-template-columns: 1fr 1fr;
   gap: 8px;
 }
+
+/* Card 4: Audio Walk Player */
+.audio-card {
+  background: linear-gradient(135deg, rgba(179, 136, 255, 0.08) 0%, rgba(16, 20, 28, 0.95) 100%);
+  border: 1px solid rgba(179, 136, 255, 0.35);
+  border-radius: 16px;
+  padding: 14px;
+  margin-bottom: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+.audio-hdr {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.audio-tag {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #B388FF;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.ep-select {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 10.5px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  max-width: 180px;
+  outline: none;
+}
+.player-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+  gap: 10px;
+}
+.btn-play {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #B388FF;
+  color: #07090E;
+  border: none;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 0 16px rgba(179, 136, 255, 0.45);
+  transition: transform 0.15s ease;
+}
+.btn-play:active { transform: scale(0.92); }
+.btn-skip {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--line);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.btn-speed {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--line);
+  color: #B388FF;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: bold;
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.track-progress {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--text-dim);
+  margin-top: 10px;
+}
+.scrub-bar {
+  flex: 1;
+  -webkit-appearance: none;
+  height: 5px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.12);
+  outline: none;
+  cursor: pointer;
+}
+.scrub-bar::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #B388FF;
+}
 .topic-chip {
   border: 1px solid var(--line);
   border-radius: 10px;
@@ -467,6 +573,37 @@ html, body {
     <div class="mission-badge">3.0 / D</div>
   </div>
 
+  
+  <!-- Audio Walk Player Card -->
+  <div class="audio-card">
+    <div class="audio-hdr">
+      <div class="audio-tag">
+        <span>🎙️ AUDIO WALK // NOTEBOOKLM</span>
+      </div>
+      <select id="audioEpSelect" class="ep-select">
+        <option value="0">ਸਟ੍ਰਾਈਪ ਅਤੇ ਏਆਈ ਦੇ ਇੰਟਰਵਿਊ (17:18)</option><option value="1">ਟੈਕ ਨੌਕਰੀ ਲਈ ਰਣਨੀਤੀ ਅਤੇ ਅਸ (7:05)</option>
+      </select>
+    </div>
+
+    <div style="font-size:13.5px;font-weight:700;color:var(--text);margin-bottom:2px;" id="currentEpTitle">ਸਟ੍ਰਾਈਪ ਅਤੇ ਏਆਈ ਦੇ ਇੰਟਰਵਿਊ ਨਿਯਮ</div>
+    <div style="font-size:10.5px;color:var(--text-dim);font-family:var(--mono);" id="currentEpMeta">Duration: 17:18 • Streamed from NotebookLM</div>
+
+    <audio id="walkAudio" preload="metadata" src="https://lh3.googleusercontent.com/notebooklm/ABzcPv3vwJwayPDtcfq9GI57YPZGN6SRwS6dOKrSMNYTpl_w9xhCGVt2MELAnCguwMsHjfR0uxRlhG16yxK8PZjOQGvm_s1Ql3uemD5RWM07kcfeEZsUrlpS7IcGDswdqAL1C85N-Nwa6HpxLHREM_NgeoO_rl3QrT8=dv-mp2"></audio>
+
+    <div class="track-progress">
+      <span id="curTime">0:00</span>
+      <input type="range" id="scrubBar" class="scrub-bar" value="0" min="0" max="100">
+      <span id="durTime">17:18</span>
+    </div>
+
+    <div class="player-controls">
+      <button class="btn-skip" id="btnBack15">-15s</button>
+      <button class="btn-play" id="btnPlayPause">▶</button>
+      <button class="btn-skip" id="btnFwd15">+15s</button>
+      <button class="btn-speed" id="btnSpeed">1.0x</button>
+    </div>
+  </div>
+
   <!-- Topic Frontier Breakdown -->
   <div class="card">
     <div class="frontier-hdr">
@@ -571,6 +708,87 @@ html, body {
   <div class="footer">
     Auto-synced daily at 9:00 AM • <a href="full.html">View Deep Diagnostic Logs →</a>
   </div>
+
+<script>
+const EPISODES = [{"id": "32f2c4e2-ff4d-48a6-9596-4356d1c8470a", "title": "ਸਟ੍ਰਾਈਪ ਅਤੇ ਏਆਈ ਦੇ ਇੰਟਰਵਿਊ ਨਿਯਮ", "status": "completed", "duration_seconds": 1038.319999, "duration_formatted": "17:18", "created_at": "2026-11-06 11:34", "url": "https://lh3.googleusercontent.com/notebooklm/ABzcPv3vwJwayPDtcfq9GI57YPZGN6SRwS6dOKrSMNYTpl_w9xhCGVt2MELAnCguwMsHjfR0uxRlhG16yxK8PZjOQGvm_s1Ql3uemD5RWM07kcfeEZsUrlpS7IcGDswdqAL1C85N-Nwa6HpxLHREM_NgeoO_rl3QrT8=dv-mp2"}, {"id": "b18a5c75-3c2d-40cb-80f7-2ee4546e9d92", "title": "ਟੈਕ ਨੌਕਰੀ ਲਈ ਰਣਨੀਤੀ ਅਤੇ ਅਸਲੀ ਅਮਲ", "status": "completed", "duration_seconds": 425.570958, "duration_formatted": "7:05", "created_at": "2026-07-25 08:43", "url": "https://lh3.googleusercontent.com/notebooklm/ABzcPv15aNn9sAg7KAjBzvg9FYVxz1ZCi7_sTWNy21EcsCWc0wnxsyrzBfymoBeu1KVPI1G7pGnd0j0WWCxtxGJSMi2egEvTF2SlX-UvgtTrlUOVpHk7MDX4NYZ_fq32g8p_PNAVMuP7Z_kDq7s84XSVENEDRNYZZOc=dv-mp2"}];
+let currentIdx = 0;
+const audio = document.getElementById("walkAudio");
+const btnPlayPause = document.getElementById("btnPlayPause");
+const curTime = document.getElementById("curTime");
+const durTime = document.getElementById("durTime");
+const scrubBar = document.getElementById("scrubBar");
+const epSelect = document.getElementById("audioEpSelect");
+const epTitle = document.getElementById("currentEpTitle");
+const epMeta = document.getElementById("currentEpMeta");
+const btnSpeed = document.getElementById("btnSpeed");
+
+const speeds = [1.0, 1.25, 1.5, 1.75, 2.0];
+let speedIdx = 0;
+
+if (audio) {
+  function formatSecs(s) {
+    if (isNaN(s)) return "0:00";
+    const m = Math.floor(s / 60);
+    const sec = Math.floor(s % 60);
+    return m + ":" + (sec < 10 ? "0" : "") + sec;
+  }
+
+  btnPlayPause.addEventListener("click", () => {
+    if (audio.paused) {
+      audio.play();
+      btnPlayPause.innerText = "⏸";
+    } else {
+      audio.pause();
+      btnPlayPause.innerText = "▶";
+    }
+  });
+
+  document.getElementById("btnBack15").addEventListener("click", () => {
+    audio.currentTime = Math.max(0, audio.currentTime - 15);
+  });
+  document.getElementById("btnFwd15").addEventListener("click", () => {
+    audio.currentTime = Math.min(audio.duration || 99999, audio.currentTime + 15);
+  });
+
+  btnSpeed.addEventListener("click", () => {
+    speedIdx = (speedIdx + 1) % speeds.length;
+    const spd = speeds[speedIdx];
+    audio.playbackRate = spd;
+    btnSpeed.innerText = spd + "x";
+  });
+
+  audio.addEventListener("timeupdate", () => {
+    if (!isNaN(audio.duration) && audio.duration > 0) {
+      curTime.innerText = formatSecs(audio.currentTime);
+      durTime.innerText = formatSecs(audio.duration);
+      scrubBar.value = (audio.currentTime / audio.duration) * 100;
+    }
+  });
+
+  scrubBar.addEventListener("input", () => {
+    if (!isNaN(audio.duration) && audio.duration > 0) {
+      audio.currentTime = (scrubBar.value / 100) * audio.duration;
+    }
+  });
+
+  epSelect.addEventListener("change", (e) => {
+    currentIdx = parseInt(e.target.value);
+    const ep = EPISODES[currentIdx];
+    if (ep) {
+      audio.src = ep.url;
+      epTitle.innerText = ep.title;
+      epMeta.innerText = "Duration: " + ep.duration_formatted + " • Streamed from NotebookLM";
+      audio.currentTime = 0;
+      audio.play();
+      btnPlayPause.innerText = "⏸";
+    }
+  });
+
+  audio.addEventListener("ended", () => {
+    btnPlayPause.innerText = "▶";
+  });
+}
+</script>
 
 </body>
 </html>
